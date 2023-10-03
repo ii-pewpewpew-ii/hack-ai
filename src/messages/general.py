@@ -8,6 +8,7 @@ class UAgentResponseType(Enum):
     OPTIONS = "available_options"
     SUCCESS = "response_successfull"
     ALERT = "threshold_exceeded"
+    NEWS = "news_data"
 
 class KeyValue(Model):
     key : str 
