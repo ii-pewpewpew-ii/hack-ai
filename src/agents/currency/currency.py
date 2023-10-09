@@ -12,7 +12,7 @@ import requests
 from agents.news.news import agent as news_agent
 from typing import List
 
-load_dotenv("D:\hackAi\.env")
+load_dotenv(".\.env")
 
 
 

@@ -12,7 +12,8 @@ fund_agent_if_low(client.wallet.address())
 available_currencies_request = str(uuid.uuid4())
 
 base_currency = "USD"
-foreign_currency = "AED"
+foreign_currency = "AED,COP"
+foreign_currency=foreign_currency.split(',')
 
 
 @client.on_interval(period= 100)
@@ -30,9 +31,11 @@ async def handle_currencies_response(ctx:Context,sender : str,msg: UAgentRespons
         keys = set()
         for key_value_pair in msg.available_options:
             keys.add(key_value_pair.key)
-        if base_currency in keys and foreign_currency in keys:
-            subscribe_request_id = str(uuid.uuid4())
-            await ctx.send(sender,SubscribeRequest(subscriber_address=client.address,currency_base=base_currency,currency_exchanged=foreign_currency,threshold=100,request_id=subscribe_request_id))
+        if base_currency in keys and all(item in keys for item in foreign_currency):
+            #Multiple foreign currency request
+            for forCur in foreign_currency:
+                subscribe_request_id = str(uuid.uuid4())
+                await ctx.send(sender,SubscribeRequest(subscriber_address=client.address,currency_base=base_currency,currency_exchanged=forCur,threshold=100,request_id=subscribe_request_id))
         else:
             ctx.logger.info("Currency not found in registry. Nothing can be done")
 

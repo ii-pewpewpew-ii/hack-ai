@@ -7,7 +7,7 @@ from messages.news_request import NewsRequest
 from messages.general import UAgentResponse,UAgentResponseType
 import json
 
-load_dotenv('D:\hackAi\.env')
+load_dotenv('.\.env')
 
 NEWS_AGENT_SEED = os.getenv('NEWS_AGENT_SEED',"secret-news-agent-seed")
 NEWS_API_KEY = os.getenv('NEWS_API_KEY',"")
@@ -31,10 +31,16 @@ async def handle_request(ctx : Context,sender : str,msg : NewsRequest):
 
     response = requests.get(NEWS_API_URL,params={"q" : f"{currency_1} AND {currency_2}","apiKey" : NEWS_API_KEY,'language' : 'en', 'sortBy' : 'publishedAt','searchIn' : 'title',"pageSize" : 2})
     data = response.json()
-
-    reply_message_json = json.dumps(data['articles'])
     
-    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=reply_message_json,subscriber_id=subscription_id)
+    response_string=""
+
+    if data['articles']:
+        response_string="\n\nRelated Articles\n"
+
+        for i,article in enumerate(data['articles']):
+            response_string+=f"{str(i+1)}) {article['title']} \n{article['description']}\nFor more details: {article['url']}"
+    
+    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=response_string,subscriber_id=subscription_id)
     await ctx.send(sender,reply)
 
 
