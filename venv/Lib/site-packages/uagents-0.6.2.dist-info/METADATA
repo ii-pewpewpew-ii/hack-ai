@@ -1,0 +1,47 @@
+Metadata-Version: 2.1
+Name: uagents
+Version: 0.6.2
+Summary: Lightweight framework for rapid agent-based development
+License: Apache 2.0
+Author: Ed FitzGerald
+Author-email: edward.fitzgerald@fetch.ai
+Requires-Python: >=3.8,<3.12
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: aiohttp (>=3.8.3,<4.0.0)
+Requires-Dist: apispec (>=6.0.2,<7.0.0)
+Requires-Dist: bech32 (>=1.2.0,<2.0.0)
+Requires-Dist: cosmpy (>=0.9.1,<0.10.0)
+Requires-Dist: ecdsa (>=0.18.0,<0.19.0)
+Requires-Dist: msgpack (>=1.0.4,<2.0.0)
+Requires-Dist: pydantic (>=1.10.2,<2.0.0)
+Requires-Dist: uvicorn (>=0.20.0,<0.21.0)
+Requires-Dist: websockets (>=10.4,<11.0)
+Description-Content-Type: text/markdown
+
+## Installation (Python)
+
+Install μAgents for Python 3.8, 3.9, 3.10, or 3.11:
+
+```bash
+poetry install
+poetry shell
+```
+
+## Documentation
+
+Build and run the docs locally with:
+
+```bash
+mkdocs serve
+```
+
+Or go to the official docs site: https://docs.fetch.ai/uAgents.
+
+## Examples
+
+The [`examples`](https://github.com/fetchai/uAgents/tree/main/python/examples) folder contains several examples of how to create and run various types of agents.

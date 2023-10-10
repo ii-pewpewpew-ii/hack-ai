@@ -1,17 +1,20 @@
 from uagents import Agent,Protocol,Context
 import requests
-from dotenv import load_dotenv
 import os
 from uagents.setup import fund_agent_if_low
 from messages.news_request import NewsRequest
 from messages.general import UAgentResponse,UAgentResponseType
 import json
 
-load_dotenv('D:\hackAi\.env')
+# load_dotenv('D:\hackAi\.env')
 
-NEWS_AGENT_SEED = os.getenv('NEWS_AGENT_SEED',"secret-news-agent-seed")
-NEWS_API_KEY = os.getenv('NEWS_API_KEY',"")
+NEWS_AGENT_SEED = "secret_news_agent_seed"
+
+## 
+NEWS_API_KEY = "3c8cbc85fa724034bb31e01ebf9d95f7"
+
 NEWS_API_URL = 'https://newsapi.org/v2/everything'
+
 assert NEWS_API_KEY, 'News api key not found.'
 
 agent = Agent(

@@ -1,7 +1,7 @@
 from uagents import Agent, Protocol,Context
 from pydantic import Field
 from uagents.setup import fund_agent_if_low
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 import json
 import uuid
@@ -12,12 +12,13 @@ import requests
 from agents.news.news import agent as news_agent
 from typing import List
 
-load_dotenv("D:\hackAi\.env")
+# load_dotenv("D:\hackAi\.env")
 
+FIXER_API_KEY = "af32a45ef1d4dff2ab98a3c0100e8c77"
 
-
-FIXER_API_KEY = os.getenv("FIXER_API_KEY","") 
+##### 
 assert FIXER_API_KEY, "fixer api key is missing"
+
 FIXER_API_URL = "http://data.fixer.io/api"
 
 agent = Agent(
@@ -28,21 +29,19 @@ fund_agent_if_low(agent.wallet.address())
 
 currency_protocol = Protocol("Currency-rates")
 
-
 # Fetching available currencies in the api everyday to update available currency options
 @currency_protocol.on_interval(period=86400)
 async def fetch_available_rates(ctx : Context):
-
     response = requests.get(url = FIXER_API_URL+'/symbols',params = {"access_key" : FIXER_API_KEY})
     
-    if response != 200:
+    if not response.json()['success']:
         print("Failed Request, try again later",response.json())
     else:
         data = response.json()
         available_currencies = data["symbols"]
+        print(available_currencies)
         agent._storage.set('currencies',available_currencies)
     
-
 
 # Sending the client a list of all available currencies that the agent can track.
 @currency_protocol.on_message(model = AvailableCurrenciesRequest,replies = UAgentResponse)
@@ -85,7 +84,13 @@ async def handle_subscribe_request(ctx : Context,sender : str,msg : SubscribeReq
     }
     ctx.storage.set(subscriber_id,subscriber_data)
     
-    response = UAgentResponse(type=UAgentResponseType.SUCCESS,request_id=request_id,message="Subscription added. Notification will be sent if threshold is exceeded.",subscriber_id=subscriber_id)
+    data = json.dumps({
+        "currency_base" : msg.currency_base,
+        "currency_exchange" : msg.currency_exchanged ,
+        "threshold" : msg.threshold 
+    })
+
+    response = UAgentResponse(type=UAgentResponseType.SUCCESS,request_id=request_id,message=data,subscriber_id=subscriber_id)
     await ctx.send(sender,response)
 
 
@@ -120,6 +125,12 @@ async def handle_notifications(ctx : Context,sender : str, msg : UAgentResponse)
 async def handle_news_fetch(ctx : Context,response : requests.Response):
     
     data = response.json()
+
+    print(data)
+
+    if not data['success']:
+        return 
+
     rates = data["rates"]
     ctx.storage.set('rates',rates)
     subscribers = ctx.storage.get("subscribers")
@@ -128,7 +139,7 @@ async def handle_news_fetch(ctx : Context,response : requests.Response):
             return 
     
     for subscriber_id in subscribers:
-
+        print(subscriber_id)
         subscription_data = ctx.storage.get(subscriber_id)
         base = subscription_data["currency_base"]
         exchange = subscription_data["currency_exchange"]
