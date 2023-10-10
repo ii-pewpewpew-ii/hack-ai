@@ -8,6 +8,7 @@ from uagents.setup import fund_agent_if_low
 
 client = Agent(name = "client",seed = "alice phase",port=8008,endpoint=["http://127.0.0.1:8008/submit"])
 currency_agent_address = "agent1q20cgjnqr3jczjqpz897rslwus6cffs0xsac66d6ux0smu6zyvddcrec3u7"
+
 fund_agent_if_low(client.wallet.address())
 available_currencies_request = str(uuid.uuid4())
 

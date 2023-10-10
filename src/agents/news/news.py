@@ -1,4 +1,5 @@
 from uagents import Agent,Protocol,Context
+from utils.summarizer import generate_summary, text_extractor_from_website
 import requests
 from dotenv import load_dotenv
 import os
@@ -33,14 +34,19 @@ async def handle_request(ctx : Context,sender : str,msg : NewsRequest):
     data = response.json()
     
     response_string=""
+    summary="\n\nThe possible reason based on articles found online are:\n"
 
     if data['articles']:
-        response_string="\n\nRelated Articles\n"
+        response_string=""
 
         for i,article in enumerate(data['articles']):
-            response_string+=f"{str(i+1)}) {article['title']} \n{article['description']}\nFor more details: {article['url']}"
+            response_string+=text_extractor_from_website(article['url'])
+        
+        summary+=generate_summary(response_string)
+    else:
+        summary="\n\nNo related articles found\n"
     
-    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=response_string,subscriber_id=subscription_id)
+    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=summary,subscriber_id=subscription_id)
     await ctx.send(sender,reply)
 
 

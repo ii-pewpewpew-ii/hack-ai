@@ -24,6 +24,7 @@ agent = Agent(
     name = "currency-tracker",
     seed = "CURRENCY_SEED",
 )
+
 fund_agent_if_low(agent.wallet.address())
 
 currency_protocol = Protocol("Currency-rates")
