@@ -80,22 +80,24 @@ async def handle_subscribe_request(ctx : Context,sender : str,msg : SubscribeReq
     subscriber_data = {
         "currency_base" : msg.currency_base,
         "currency_exchange":msg.currency_exchanged,
-        "threshold" : msg.threshold,
-        "subscriber_address" : msg.subscriber_address
+        "upper_bound" : msg.upper_bound,
+        "subscriber_address" : msg.subscriber_address,
+        "lower_bound" : msg.lower_bound
     }
     ctx.storage.set(subscriber_id,subscriber_data)
     
     data = json.dumps({
         "currency_base" : msg.currency_base,
         "currency_exchange" : msg.currency_exchanged ,
-        "threshold" : msg.threshold 
+        "upper_bound" : msg.upper_bound,
+        "lower_bound" : msg.lower_bound 
     })
 
     response = UAgentResponse(type=UAgentResponseType.SUCCESS,request_id=request_id,message=data,subscriber_id=subscriber_id)
     await ctx.send(sender,response)
 
 
-#API Updates rates every 60 seconds. Hence to fetch the data and check against all subscribers to send them notification in case of exceeded threshold.
+#API Updates rates every 60 seconds. Hence to fetch the data and check against all subscribers to send them notification in case currency goes out of bounds.
 @currency_protocol.on_interval(period=15)
 async def news_fetch(ctx : Context):
     
@@ -144,14 +146,13 @@ async def handle_news_fetch(ctx : Context,response : requests.Response):
         subscription_data = ctx.storage.get(subscriber_id)
         base = subscription_data["currency_base"]
         exchange = subscription_data["currency_exchange"]
-        threshold = subscription_data["threshold"]
-
+        upper_bound = subscription_data["upper_bound"]
+        lower_bound = subscription_data["lower_bound"]
         current_value = calculate_exchange(base=base,exchange=exchange,rates=rates)
 
-        if current_value >= threshold:
+        if current_value >= upper_bound or current_value < lower_bound:
             news_agent_address = news_agent.address
             news_request = NewsRequest(currency_1=base,currency_2=exchange,subscription_id=subscriber_id)
-
             await ctx.send(news_agent_address,news_request)
 
 
@@ -170,11 +171,16 @@ def format_alert(subscription_id : str,subscription_data : dict,rates : dict) ->
     
     base = subscription_data["currency_base"]
     exchange = subscription_data["currency_exchange"]
-    threshold = subscription_data["threshold"]
-
+    lower_bound = subscription_data["lower_bound"]
+    upper_bound = subscription_data["upper_bound"]
     current_value = calculate_exchange(base,exchange,rates)
 
-    return f"Threshold exceeded for subscription Id : {subscription_id}\nTracking {base} -> {exchange}\nSet-Threshold : {threshold}\nCurrent-Value : {current_value}"
+    reply = f"Alert for currency out of bounds \nsubscription Id : {subscription_id}\nTracking {base} -> {exchange}\n"
+    if current_value < lower_bound:
+        reply += f"Set lower-bound : {lower_bound}\nCurrent-Value : {current_value}"
+    else:
+        reply += f"Set lower-bound : {upper_bound}\nCurrent-Value : {current_value}"
+    return reply
 
 
 agent.include(currency_protocol)

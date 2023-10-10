@@ -1,7 +1,8 @@
-import sys, os, json, asyncio
-from dotenv import load_dotenv
+import sys
+import json
+import asyncio
 from PyQt6.QtCore import QThread, pyqtSignal ,Qt ,QTimer
-from PyQt6.QtGui import QDoubleValidator  
+from PyQt6.QtGui import QIntValidator  
 from PyQt6.QtWidgets import QFrame, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget ,QLineEdit,QTabWidget, QComboBox , QScrollArea,QLabel ,QHBoxLayout ,QMessageBox
 from uagents import Agent, Context
 from enum import Enum
@@ -15,10 +16,8 @@ import time
 
 available_currencies_request = str(uuid.uuid4())
 
- 
-
-# base_currency = "USD"
-# foreign_currency = "AED"
+base_currency = "USD"
+foreign_currency = "AED"
 
 class User(QThread):
 
@@ -38,7 +37,6 @@ class User(QThread):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        # Create agent
         f = open("src/data/config.json")
         temp = json.load(f)
         # Create agent
@@ -74,6 +72,7 @@ class User(QThread):
         loop.run_until_complete(async_function())
         loop.close()
    
+
 
 class Updater():
 
@@ -119,16 +118,22 @@ class Updater():
         
         data = json.loads(data)
         temp = data["currency_base"]+"_"+ data["currency_exchange"]
-        self.window.message_emitter.subscribed_list[temp] = data["threshold"]
+        self.window.message_emitter.subscribed_list[temp] = data["lower_bound"]
         label = QLabel()
 
         label.setText(f"<html><p style='color: white; font-size: 16px;font-weight:700'>{data['currency_base']} vs {data['currency_exchange']}</p>"
-                  f"<p style='color:  #007BFF; font-size: 18px;'>Threshold : {data['threshold']}</p></html>")
+                  f"<p style='color:  #007BFF; font-size: 18px;'>Upper Bound : {data['upper_bound']}  , Lower Bound:{data['lower_bound']}</p></html>")
         label.setStyleSheet("padding:10px;margin-bottom:20px")
            
         self.window.subscribed_tab_layout.addWidget(label)
         
         self.window.display_message("LOW","Subscription successfull")
+
+        print(self.window.current_list)
+        w = self.window.current_list[temp][2]
+        self.window.options_tab_layout.removeWidget(w)
+        w.deleteLater()
+        del self.window.current_list[temp]
 
 
 class MainWindow(QMainWindow):
@@ -140,7 +145,6 @@ class MainWindow(QMainWindow):
 
         self.central_widget = QTabWidget()
         self.setCentralWidget(self.central_widget)
-
         self.central_widget.setStyleSheet("""
             QTabWidget::tab-bar {
                 background: #333;
@@ -165,7 +169,6 @@ class MainWindow(QMainWindow):
         self.message_emitter.start()
 
         self.options_tab = QWidget()
-        self.central_widget.addTab(self.options_tab,"Settings")
 
         self.combobox1_label = QLabel("Choose Base Currency")
         self.combobox2_label = QLabel("Choose Foreign Currency")
@@ -184,40 +187,63 @@ class MainWindow(QMainWindow):
         self.c2.addWidget(self.combobox2)
         self.combobox2_wrapper.setLayout(self.c2)
 
-        self.add_button = QPushButton("Add Subscription")
-        self.add_button.setStyleSheet(
+        self.add_button = QPushButton("Add to List")
+
+        self.subscribe_button = QPushButton("Subscribe All")
+        self.subscribe_button.setStyleSheet(
     "background-color: #007BFF; color: white; border: none; padding: 7px; "
     "border: 2px solid rgba(0, 0, 0, 0.2); /* Custom shadow effect */"
     "margin-bottom : 2rem"
 )
 
-        self.add_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.subscribe_button.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self.subscribe_button.clicked.connect(self.subscribe_all_async)
         self.add_button.clicked.connect(self.run_async_function)
 
-        self.number_input = QLineEdit()
-        self.number_input.setPlaceholderText("Enter a number")
-        self.number_input.setFixedWidth(100)
-        double_validator = QDoubleValidator(self)
-        self.number_input.setValidator(double_validator)
+        self.number_input_1 = QLineEdit()
+        self.number_input_1.setPlaceholderText("Upper Bound")
+        self.number_input_1.setFixedWidth(100)
+        int_validator = QIntValidator(self)
+        self.number_input_1.setValidator(int_validator)
+
+        self.number_input_2 = QLineEdit()
+        self.number_input_2.setPlaceholderText("Lower Bound")
+        self.number_input_2.setText("-1")
+        self.number_input_2.setFixedWidth(100)
+        int_validator = QIntValidator(self)
+        self.number_input_2.setValidator(int_validator)
 
         self.options_message = QLabel()
         self.options_message.setStyleSheet("color:red;")
 
         self.c3 = QHBoxLayout()
-        self.c3.addWidget(QLabel("Enter Threshold"))
-        self.c3.addWidget(self.number_input)
-        self.input_wrapper = QWidget()
-        self.input_wrapper.setLayout(self.c3)
+        self.c3.addWidget(QLabel("Enter Upperbound"))
+        self.c3.addWidget(self.number_input_1)
+        self.input_wrapper_1 = QWidget()
+        self.input_wrapper_1.setLayout(self.c3)
+
+        self.c3 = QHBoxLayout()
+        self.c3.addWidget(QLabel("Enter Lowerbound(Optional)"))
+        self.c3.addWidget(self.number_input_2)
+        self.input_wrapper_2 = QWidget()
+        self.input_wrapper_2.setLayout(self.c3)
 
         self.options_tab_layout = QVBoxLayout()
-        self.options_tab_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)  
+        self.options_tab_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  
         self.options_tab_layout.addWidget(self.combobox1_wrapper)
         self.options_tab_layout.addWidget(self.combobox2_wrapper)
-        self.options_tab_layout.addWidget(self.input_wrapper)
+        self.options_tab_layout.addWidget(self.input_wrapper_1)
+        self.options_tab_layout.addWidget(self.input_wrapper_2)
         self.options_tab_layout.addWidget(self.add_button)
         self.options_tab_layout.addWidget(self.options_message)
-
+        self.options_tab_layout.addWidget(self.subscribe_button)
         self.options_tab.setLayout(self.options_tab_layout)
+
+        scroll_area_0 = QScrollArea(self)
+        scroll_area_0.setWidgetResizable(True)
+        scroll_area_0.setWidget(self.options_tab)
+
     
         self.alert_tab = QWidget()
         self.alert_tab_layout = QVBoxLayout()
@@ -243,8 +269,11 @@ class MainWindow(QMainWindow):
         scroll_area_2.setWidget(self.subscribed_tab)
         scroll_area_2.setStyleSheet("background-color: #333;color:white")
 
+        self.central_widget.addTab(scroll_area_0,"Settings")
         self.central_widget.addTab(scroll_area_1,"Notifications")
         self.central_widget.addTab(scroll_area_2,"Subscribed currencies")
+
+        self.current_list = dict() #stores current list of options to subscribe 
         
     def display_message(self,severity,message):
 
@@ -261,6 +290,52 @@ class MainWindow(QMainWindow):
     def hideLabel(self):
         self.options_message.setText("")
         self.timer.stop()
+    
+    async def subscribe_all(self):
+
+        if len(self.current_list.keys()) ==0 :
+            self.display_message("HIGH","List is Empty")
+            return 
+
+        for i in self.current_list: 
+            subscribe_request_id = str(uuid.uuid4())
+            upper_bound = self.current_list[i][0]
+            lower_bound = self.current_list[i][1]
+            i = i.split("_")
+            base_currency = i[0]
+            foreign_currency = i[1]
+            self.display_message("LOW","Subscribing... "+base_currency+" vs "+foreign_currency)
+            await self.message_emitter.ctx.send(self.message_emitter.currency_agent_address, SubscribeRequest(subscriber_address=self.message_emitter.client.address, currency_base=base_currency, currency_exchanged=foreign_currency, upper_bound=upper_bound, lower_bound =lower_bound, request_id=subscribe_request_id))
+            self.display_message("HIGH","Subscribed successfully"+base_currency+" vs "+foreign_currency)
+
+
+    def subscribe_all_async(self):
+        asyncio.run(self.subscribe_all())
+
+    def add_combination(self,base_currency,foreign_currency,upper_bound,lower_bound):
+        w = QWidget()
+        w_layout = QHBoxLayout()
+        w.setLayout(w_layout)
+        label = QLabel()
+        label.setText(f"<html><p style='color:black;font-weight:700'>{base_currency} vs {foreign_currency}</p><p style='color:#007BFF'>( {upper_bound} - {lower_bound} )</p></html>")
+        button = QPushButton("Delete")
+        button.clicked.connect(lambda:self.delete_combination(widget=w))
+        button.setStyleSheet("color:white;background-color:red;padding:10px")
+        w_layout.addWidget(label)
+        w_layout.addWidget(button)
+        self.options_tab_layout.addWidget(w)
+        #add to current list
+        temp = base_currency + "_" + foreign_currency 
+        self.current_list[temp] = []
+        self.current_list[temp].append(upper_bound)
+        self.current_list[temp].append(lower_bound)
+        self.current_list[temp].append(w)
+
+    def delete_combination(self,widget):
+        self.options_tab_layout.removeWidget(widget)
+        widget.deleteLater()
+        del widget 
+
 
     async def show_popup_notification(self):
         
@@ -280,8 +355,12 @@ class MainWindow(QMainWindow):
             self.display_message("HIGH","Please Wait")
             return
 
-        if self.number_input.text()=="":
-            self.display_message("HIGH","Please Enter Threshold")
+        if self.number_input_1.text()=="":
+            self.display_message("HIGH","Please Enter Upper Bound")
+            return 
+
+        if temp in self.current_list : 
+            self.display_message("HIGH","You Already added to the list")
             return 
         
         flag = True 
@@ -297,18 +376,10 @@ class MainWindow(QMainWindow):
             result = msg.exec()
 
             if result == QMessageBox.StandardButton.Ok:
-                subscribe_request_id = str(uuid.uuid4())
-                self.display_message("LOW","Please Wait....")
-                await self.message_emitter.ctx.send(self.message_emitter.currency_agent_address, SubscribeRequest(subscriber_address=self.message_emitter.client.address, currency_base=base_currency, currency_exchanged=foreign_currency, threshold= self.number_input.text(), request_id=subscribe_request_id))
+                self.add_combination(base_currency,foreign_currency,self.number_input_1.text(),self.number_input_2.text())
 
         else :
             self.display_message("HIGH","Both Currencies are same")
-
-    # def show_popup_notification_async(self):
-    #     # Create a QTimer to run the asynchronous function in the event loop
-    #     timer = QTimer()
-    #     timer.timeout.connect(self.run_async_function)
-    #     timer.start(0)
 
     def run_async_function(self):
         asyncio.run(self.show_popup_notification())

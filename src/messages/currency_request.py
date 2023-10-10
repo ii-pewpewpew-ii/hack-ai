@@ -9,5 +9,7 @@ class SubscribeRequest(Model):
     subscriber_address : str = Field(description="Sender id for the request")
     currency_base : str = Field(description="Base currency to be tracked")
     currency_exchanged : str = Field(description="Currency to which conversion should be tracked")
-    threshold : float = Field(description="The threshold, which when crossed should initiate a notification to the subscriber")
+    upper_bound : float = Field(description="The upper bound, which when crossed should initiate a notification to the subscriber")
     request_id : str = Field(description="Request id for the request")
+    lower_bound : float = Field(description="The lower bound, which when crossed should initiate a notification to the subscriber")
+    
