@@ -26,6 +26,21 @@ news_protocol = Protocol("news_protocol")
 @news_protocol.on_message(model=NewsRequest,replies=UAgentResponse)
 async def handle_request(ctx : Context,sender : str,msg : NewsRequest):
     
+    '''
+    This function is called when it receives a News request from the 
+    currency agent.
+
+    Fetches related news articles from the NEWS API for the reason
+    behind the currency going out of bounds and sends it to the currency agent.
+
+    Args : 
+        ctx (Context) : Context.
+        sender (str) : Currency agent address.
+        msg (NewsRequest) : The news request initiated by the currency agent.
+    Returns :
+        None 
+    '''
+
     currency_1 = msg.currency_1
     currency_2 = msg.currency_2
     subscription_id = msg.subscription_id
