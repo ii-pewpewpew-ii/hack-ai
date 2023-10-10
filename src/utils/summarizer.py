@@ -21,17 +21,18 @@ def text_extractor_from_website(url):
     summarized using the built-in nlp module
 
     Args :
-        url: An url of a news article
+        url (str): An url of a news article
 
     Returns:
-        str: Summary of the content parsed from the news article
+        summary (str) : Summary of the content parsed from the news article
     '''
     
     news_article = Article(url, language="en")
     news_article.download()
     news_article.parse()
     news_article.nlp()
-    return news_article.summary
+    summary=news_article.summary
+    return summary
 
 def generate_summary(txt, curr1, curr2):
 
@@ -41,12 +42,12 @@ def generate_summary(txt, curr1, curr2):
     summarize the content as possible reasons in the given PROMPT_TEMPLATE format.
 
     Args:
-        txt: The summarized text content of all the articles
-        curr1: The base currency, to be used in the prompt
-        curr2: The foreign currency, to be used in the prompt
+        txt (str) : The summarized text content of all the articles
+        curr1 (str) : The base currency, to be used in the prompt
+        curr2 (str) : The foreign currency, to be used in the prompt
     
     Returns:
-        str: Possible reasons for the exchange-rate change in points format
+        summarized_content (str) : Possible reasons for the exchange-rate change in points format
     '''
     
     prompt_template = """
