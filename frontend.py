@@ -1,8 +1,7 @@
-import sys
-import json
-import asyncio
+import sys, os, json, asyncio
+from dotenv import load_dotenv
 from PyQt6.QtCore import QThread, pyqtSignal ,Qt ,QTimer
-from PyQt6.QtGui import QIntValidator  
+from PyQt6.QtGui import QDoubleValidator  
 from PyQt6.QtWidgets import QFrame, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget ,QLineEdit,QTabWidget, QComboBox , QScrollArea,QLabel ,QHBoxLayout ,QMessageBox
 from uagents import Agent, Context
 from enum import Enum
@@ -16,8 +15,10 @@ import time
 
 available_currencies_request = str(uuid.uuid4())
 
-base_currency = "USD"
-foreign_currency = "AED"
+ 
+
+# base_currency = "USD"
+# foreign_currency = "AED"
 
 class User(QThread):
 
@@ -37,7 +38,8 @@ class User(QThread):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        f = open("src/config.json")
+        # Create agent
+        f = open("src/data/config.json")
         temp = json.load(f)
         # Create agent
         self.currency_agent_address = temp["currency_agent_address"]
@@ -72,7 +74,6 @@ class User(QThread):
         loop.run_until_complete(async_function())
         loop.close()
    
-
 
 class Updater():
 
@@ -196,8 +197,8 @@ class MainWindow(QMainWindow):
         self.number_input = QLineEdit()
         self.number_input.setPlaceholderText("Enter a number")
         self.number_input.setFixedWidth(100)
-        int_validator = QIntValidator(self)
-        self.number_input.setValidator(int_validator)
+        double_validator = QDoubleValidator(self)
+        self.number_input.setValidator(double_validator)
 
         self.options_message = QLabel()
         self.options_message.setStyleSheet("color:red;")

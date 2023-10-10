@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "currency-monitor-v1"
+version = "0.1.0"
+description = "Made using fetch.ai's uagent to monitor realtime currency values and give alert if it exceeds the threshold value."
+authors = ["shershon <shershon.japs@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10"
+pyqt6 = "^6.5.2"
+uagents = "^0.6.2"
+python-dotenv = "^1.0.0"
+newspaper3k = "^0.2.8"
+langchain = "^0.0.311"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

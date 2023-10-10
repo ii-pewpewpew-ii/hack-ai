@@ -1,7 +1,7 @@
 from uagents import Agent, Protocol,Context
 from pydantic import Field
 from uagents.setup import fund_agent_if_low
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import os
 import json
 import uuid
@@ -12,19 +12,20 @@ import requests
 from agents.news.news import agent as news_agent
 from typing import List
 
-# load_dotenv("D:\hackAi\.env")
 
-FIXER_API_KEY = "af32a45ef1d4dff2ab98a3c0100e8c77"
+load_dotenv(".\.env")
 
-##### 
-assert FIXER_API_KEY, "fixer api key is missing"
-
+FIXER_API_KEY = os.getenv("FIXER_API_KEY","") 
 FIXER_API_URL = "http://data.fixer.io/api"
+assert FIXER_API_KEY, "fixer api key is missing"
 
 agent = Agent(
     name = "currency-tracker",
     seed = "CURRENCY_SEED",
 )
+
+agent._storage._path='./data/agent_data.json'
+
 fund_agent_if_low(agent.wallet.address())
 
 currency_protocol = Protocol("Currency-rates")
@@ -136,7 +137,7 @@ async def handle_news_fetch(ctx : Context,response : requests.Response):
     subscribers = ctx.storage.get("subscribers")
 
     if not subscribers:
-            return 
+        return 
     
     for subscriber_id in subscribers:
         print(subscriber_id)

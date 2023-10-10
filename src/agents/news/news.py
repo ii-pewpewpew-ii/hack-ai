@@ -1,4 +1,6 @@
-from uagents import Agent,Protocol,Context
+from uagents import Agent, Protocol, Context
+from utils.summarizer import generate_summary, text_extractor_from_website
+from dotenv import load_dotenv
 import requests
 import os
 from uagents.setup import fund_agent_if_low
@@ -6,15 +8,11 @@ from messages.news_request import NewsRequest
 from messages.general import UAgentResponse,UAgentResponseType
 import json
 
-# load_dotenv('D:\hackAi\.env')
+load_dotenv('.\.env')
 
-NEWS_AGENT_SEED = "secret_news_agent_seed"
-
-## 
-NEWS_API_KEY = "3c8cbc85fa724034bb31e01ebf9d95f7"
-
+NEWS_AGENT_SEED = os.getenv('NEWS_AGENT_SEED',"secret-news-agent-seed")
+NEWS_API_KEY = os.getenv('NEWS_API_KEY',"")
 NEWS_API_URL = 'https://newsapi.org/v2/everything'
-
 assert NEWS_API_KEY, 'News api key not found.'
 
 agent = Agent(
@@ -35,9 +33,20 @@ async def handle_request(ctx : Context,sender : str,msg : NewsRequest):
     response = requests.get(NEWS_API_URL,params={"q" : f"{currency_1} AND {currency_2}","apiKey" : NEWS_API_KEY,'language' : 'en', 'sortBy' : 'publishedAt','searchIn' : 'title',"pageSize" : 2})
     data = response.json()
 
-    reply_message_json = json.dumps(data['articles'])
+    response_string=""
+    summary="\n\nThe possible reason based on articles found online are:\n"
+
+    if data['articles']:
+        response_string=""
+
+        for i,article in enumerate(data['articles']):
+            response_string+=text_extractor_from_website(article['url'])
+        
+        summary+=generate_summary(response_string)
+    else:
+        summary="\n\nNo related articles found\n"
     
-    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=reply_message_json,subscriber_id=subscription_id)
+    reply = UAgentResponse(type=UAgentResponseType.NEWS,message=summary,subscriber_id=subscription_id)
     await ctx.send(sender,reply)
 
 

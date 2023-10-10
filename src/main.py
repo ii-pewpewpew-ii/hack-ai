@@ -4,11 +4,11 @@ from agents.news.news import agent as news_agent
 import json
 
 def update_address(address):
-    f = open("config.json")
+    f = open("data/config.json")
     temp = json.load(f)
     temp["currency_agent_address"] = address 
     temp = json.dumps(temp)
-    with open("config.json","w") as w:
+    with open("data/config.json","w") as w:
         w.write(temp)
 
 if __name__ == "__main__":
