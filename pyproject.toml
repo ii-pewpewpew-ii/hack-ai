@@ -12,6 +12,8 @@ uagents = "^0.6.2"
 python-dotenv = "^1.0.0"
 newspaper3k = "^0.2.8"
 langchain = "^0.0.311"
+openai = "^0.28.1"
+tiktoken = "^0.5.1"
 
 
 [build-system]

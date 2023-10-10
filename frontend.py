@@ -2,7 +2,7 @@ import sys
 import json
 import asyncio
 from PyQt6.QtCore import QThread, pyqtSignal ,Qt ,QTimer
-from PyQt6.QtGui import QIntValidator  
+from PyQt6.QtGui import QDoubleValidator  
 from PyQt6.QtWidgets import QFrame, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget ,QLineEdit,QTabWidget, QComboBox , QScrollArea,QLabel ,QHBoxLayout ,QMessageBox
 from uagents import Agent, Context
 from enum import Enum
@@ -201,18 +201,18 @@ class MainWindow(QMainWindow):
         self.subscribe_button.clicked.connect(self.subscribe_all_async)
         self.add_button.clicked.connect(self.run_async_function)
 
+        double_validator = QDoubleValidator(self)
+
         self.number_input_1 = QLineEdit()
         self.number_input_1.setPlaceholderText("Upper Bound")
         self.number_input_1.setFixedWidth(100)
-        int_validator = QIntValidator(self)
-        self.number_input_1.setValidator(int_validator)
+        self.number_input_1.setValidator(double_validator)
 
         self.number_input_2 = QLineEdit()
         self.number_input_2.setPlaceholderText("Lower Bound")
         self.number_input_2.setText("-1")
         self.number_input_2.setFixedWidth(100)
-        int_validator = QIntValidator(self)
-        self.number_input_2.setValidator(int_validator)
+        self.number_input_2.setValidator(double_validator)
 
         self.options_message = QLabel()
         self.options_message.setStyleSheet("color:red;")

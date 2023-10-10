@@ -30,22 +30,26 @@ async def handle_request(ctx : Context,sender : str,msg : NewsRequest):
     currency_2 = msg.currency_2
     subscription_id = msg.subscription_id
 
-    response = requests.get(NEWS_API_URL,params={"q" : f"{currency_1} AND {currency_2}","apiKey" : NEWS_API_KEY,'language' : 'en', 'sortBy' : 'publishedAt','searchIn' : 'title',"pageSize" : 2})
+    response = requests.get(NEWS_API_URL,params={"q" : f"{currency_1} vs {currency_2}","apiKey" : NEWS_API_KEY, 'sortBy' : 'publishedAt','searchIn' : 'description'})
     data = response.json()
 
     response_string=""
     summary="\n\nThe possible reason based on articles found online are:\n"
 
-    if data['articles']:
+    if data and data['status']!='error':
         response_string=""
 
         for i,article in enumerate(data['articles']):
+            # Limit to a maximum of 4 articles
+            if i==3:
+                break
             response_string+=text_extractor_from_website(article['url'])
         
-        summary+=generate_summary(response_string)
+        summary+=generate_summary(response_string, currency_1, currency_2)
     else:
         summary="\n\nNo related articles found\n"
     
+    print(response_string)
     reply = UAgentResponse(type=UAgentResponseType.NEWS,message=summary,subscriber_id=subscription_id)
     await ctx.send(sender,reply)
 
