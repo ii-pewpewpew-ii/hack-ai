@@ -14,15 +14,13 @@ def update_address(address):
         w.write(temp)
 
 #clear agent json before starts 
-def clear_json():
-     
+def clear_json():  
     agent_file = [i for i in os.listdir("data") if i.endswith(".json") and i!="config.json"][0]
     
-    with open(agent_file,"w") as f :
+    with open(os.path.join("data",agent_file),"w") as f :
         json.dump({},f)
 
 if __name__ == "__main__":
-    print(os.listdir())
     clear_json()
     
     bureau = Bureau(endpoint=["http://127.0.0.1:8001/submit"], port=8001)
