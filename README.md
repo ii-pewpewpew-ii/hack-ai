@@ -9,6 +9,7 @@ Real-time monitoring of foreign currencies with respect to a base currency is do
 ## Getting it started
 
 ### Pre-requisites
+
 To run this project, you would need:
 
 * Make sure you have python installed in your system. It is preferred to have a python version `>=3.10`
@@ -18,7 +19,9 @@ To run this project, you would need:
   ```
   pip install poetry
   ```
+  
 ### Setting up the runtime environment
+
 * Clone the project to your local system. This can be done by running
 
   ```
@@ -31,22 +34,38 @@ To run this project, you would need:
   ```
   cd <project_name>
   ```
+  
 * Use the command `poetry install` to install all the necessary packages for the project. This will install the required packages.
   
 ### Update .env file
+
 Before running the project, you should provide API key values in the `.env` file provided. The following API keys are needed for the project to run:
-* **FIXER API KEY**: For getting currency exchange rates. [Fixer API Key](https://fixer.io/documentation)
-* **FIXER API KEY**: For getting currency exchange rates. [Fixer API Key](https://fixer.io/documentation)
-* **FIXER API KEY**: For getting currency exchange rates. [Fixer API Key](https://fixer.io/documentation)
-* **OPENAI API KEY**: Used in the project for summarizing the news articles. [OpenAI API Key](https://platform.openai.com/docs/api-reference/introduction)
+
+* **FIXER API KEY** : For getting currency exchange rates. [Fixer API Key](https://fixer.io/documentation)
+  
+* **NEWS API KEY** : To get relevant articles for knowing about the reason for changes in currency rate. [NEWS API Key](https://newsapi.org/s/google-news-api)
+  
+* **OPENAI API KEY** : Used in the project for summarizing the news articles. [OpenAI API Key](https://platform.openai.com/docs/api-reference/introduction)
+  
 ### Run the project
+
 * Create another terminal with the same path and enter the following commands
+  
   ```
   cd src
   python main.py
   ```
-  * Now run the following command in the terminal with the project path
+  
+* Now run the following command in the terminal with the project path
+  
   ```
   python frontend.py
   ```
+  
 ## Features
+
+* A user-friendly GUI for interacting with the uagents, subscribing to various currency exchange values and getting notifications about the out-of-bound value of a specific currency exchange.
+  
+* Reasoning for the change in exchange rate will also be provided if possible by using NEWS APIs to get relevant articles. The relevant articles are summarized to get the required reasoning.
+
+* Users can set upper bound and lower bound for a given pair of base and foreign currency. Multiple such pairs can be added at the same time.

@@ -43,8 +43,8 @@ class User(QThread):
         self.currency_agent_address = temp["currency_agent_address"]
         self.client = Agent(name="client", seed="alice phase", port=8008, endpoint=["http://127.0.0.1:8008/submit"])
         fund_agent_if_low(self.client.wallet.address())
+        
         # start
-
         @self.client.on_interval(period=2000)
         async def handler(ctx: Context):
             self.ctx = ctx 
@@ -52,7 +52,6 @@ class User(QThread):
 
         @self.client.on_message(model=UAgentResponse, replies=SubscribeRequest)
         async def handle_currencies_response(ctx: Context, sender: str, msg: UAgentResponse):
-            print(msg)
             if msg.type == UAgentResponseType.ERROR:
                 self.message_received.emit({"type":"Error","data":"Cannot fetch details now"})
                 ctx.logger.info("Cannot fetch details now")
