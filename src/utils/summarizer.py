@@ -2,11 +2,10 @@ from dotenv import load_dotenv
 from newspaper import Article
 import os
 import openai
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.docstore.document import Document
-from langchain.prompts import PromptTemplate
-from langchain.llms.openai import OpenAI
-from langchain.chains.summarize import load_summarize_chain
+
+# Comment this out, if your system already have punkt
+import nltk
+nltk.download('punkt')
 
 load_dotenv('.\.env')
 

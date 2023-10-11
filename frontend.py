@@ -6,20 +6,19 @@ from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QFrame, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget ,QLineEdit,QTabWidget, QComboBox , QScrollArea,QLabel ,QHBoxLayout ,QMessageBox
 from uagents import Agent, Context
 from enum import Enum
-from pydantic import Field
 import uuid
 from src.messages.currency_request import AvailableCurrenciesRequest, SubscribeRequest
-from src.messages.general import UAgentResponse, KeyValue, UAgentResponseType
+from src.messages.general import UAgentResponse, UAgentResponseType
 from uagents.setup import fund_agent_if_low
-import asyncio 
-import time 
+import asyncio
 
 available_currencies_request = str(uuid.uuid4())
 
-base_currency = "USD"
-foreign_currency = "AED"
-
 class User(QThread):
+    """
+        This class is  responsible for interacting with Updater clas based 
+        on response type of currency agent 
+    """
 
     message_received = pyqtSignal(dict)
     ctx = None 
@@ -75,6 +74,9 @@ class User(QThread):
 
 class Updater():
 
+    """
+        This Class updates GUI based on type of response which given by User class 
+    """
     def __init__(self,window) :
         self.window = window
 
@@ -136,6 +138,11 @@ class Updater():
 
 
 class MainWindow(QMainWindow):
+
+    """
+        This class holds logic for creating widgets along with their actions 
+        
+    """
 
     def __init__(self):
         super().__init__()

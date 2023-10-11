@@ -2,13 +2,13 @@
 
 ## Project description
 
-> This project was made for IIT Bombay's Techfest'23: HackAI competition
+> This project was made for IIT Bombay's Techfest'23: HackAI competition 🚀
 
 Real-time monitoring of foreign currencies with respect to a base currency is done. Notifications are sent if the currency value goes out of bounds. News articles explaining the reason for the change in currency value, if available, will be summarized and sent to the user along with the notification. A front-end is also developed for user-friendly interaction with the agent.
 
-## Getting it started
+## 🚀 Getting it started
 
-### Pre-requisites
+### 🔍 Pre-requisites
 
 To run this project, you would need:
 
@@ -20,7 +20,7 @@ To run this project, you would need:
   pip install poetry
   ```
   
-### Setting up the runtime environment
+### 🔧 Setting up the runtime environment
 
 * Clone the project to your local system. This can be done by running
 
@@ -93,7 +93,10 @@ Before running the project, you should provide API key values in the `.env` file
  
     > If there is no credit remaining for the API key, you might not be able to use it
   
-### Run the project
+### 📜 Run the project
+
+* Create another terminal with the same path and enter the following commands. 
+  #### Run this before running frontend.py 
 
 * Create another terminal with the project root directory and enter the following commands. Ensure that the poetry virtual environment is activated.
   
@@ -108,7 +111,7 @@ Before running the project, you should provide API key values in the `.env` file
   python frontend.py
   ```
   
-## Features
+## ✨ Features
 
 * A user-friendly GUI for interacting with the uagents, subscribing to various currency exchange values and getting notifications about the out-of-bound value of a specific currency exchange.
   

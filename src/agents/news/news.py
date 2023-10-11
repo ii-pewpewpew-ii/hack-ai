@@ -6,7 +6,6 @@ import os
 from uagents.setup import fund_agent_if_low
 from messages.news_request import NewsRequest
 from messages.general import UAgentResponse,UAgentResponseType
-import json
 
 load_dotenv('.\.env')
 
