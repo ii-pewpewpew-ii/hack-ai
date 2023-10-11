@@ -1,16 +1,13 @@
 from uagents import Agent, Protocol,Context
-from pydantic import Field
 from uagents.setup import fund_agent_if_low
 from dotenv import load_dotenv
-import os
-import json
-import uuid
+import os, json, uuid
 from messages.general import UAgentResponse,UAgentResponseType,KeyValue
 from messages.currency_request import SubscribeRequest,AvailableCurrenciesRequest
 from messages.news_request import NewsRequest
 import requests
 from agents.news.news import agent as news_agent
-from typing import List
+import datetime
 
 
 load_dotenv(".\.env")
@@ -278,8 +275,9 @@ def format_alert(subscription_id : str,subscription_data : dict,rates : dict) ->
     lower_bound = subscription_data["lower_bound"]
     upper_bound = subscription_data["upper_bound"]
     current_value = calculate_exchange(base,exchange,rates)
+    current_timestamp = datetime.datetime.now()
 
-    reply = f"Alert for currency out of bounds \nsubscription Id : {subscription_id}\nTracking {base} -> {exchange}\n"
+    reply = f"Alert for currency out of bounds\nTimestamp:{current_timestamp}\nSubscription Id : {subscription_id}\nTracking {base} -> {exchange}\n"
     if current_value < lower_bound:
         reply += f"Set lower-bound : {lower_bound}\nCurrent-Value : {current_value}"
     else:

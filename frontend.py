@@ -6,14 +6,13 @@ from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QFrame, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget ,QLineEdit,QTabWidget, QComboBox , QScrollArea,QLabel ,QHBoxLayout ,QMessageBox
 from uagents import Agent, Context
 from enum import Enum
-from pydantic import Field
 import uuid
 from src.messages.currency_request import AvailableCurrenciesRequest, SubscribeRequest
-from src.messages.general import UAgentResponse, KeyValue, UAgentResponseType
+from src.messages.general import UAgentResponse, UAgentResponseType
 from uagents.setup import fund_agent_if_low
-import asyncio 
-import time 
+import asyncio
 
+available_currencies_request = str(uuid.uuid4())
 
 class User(QThread):
     """
