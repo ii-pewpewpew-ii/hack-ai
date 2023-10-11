@@ -14,12 +14,12 @@ from uagents.setup import fund_agent_if_low
 import asyncio 
 import time 
 
-available_currencies_request = str(uuid.uuid4())
-
-base_currency = "USD"
-foreign_currency = "AED"
 
 class User(QThread):
+    """
+        This class is  responsible for interacting with Updater clas based 
+        on response type of currency agent 
+    """
 
     message_received = pyqtSignal(dict)
     ctx = None 
@@ -75,6 +75,9 @@ class User(QThread):
 
 class Updater():
 
+    """
+        This Class updates GUI based on type of response which given by User class 
+    """
     def __init__(self,window) :
         self.window = window
 
@@ -136,6 +139,11 @@ class Updater():
 
 
 class MainWindow(QMainWindow):
+
+    """
+        This class holds logic for creating widgets along with their actions 
+        
+    """
 
     def __init__(self):
         super().__init__()
