@@ -14,10 +14,6 @@ from uagents.setup import fund_agent_if_low
 import asyncio 
 import time 
 
-available_currencies_request = str(uuid.uuid4())
-
-base_currency = "USD"
-foreign_currency = "AED"
 
 class User(QThread):
 
