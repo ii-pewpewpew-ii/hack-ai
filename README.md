@@ -49,9 +49,9 @@ Before running the project, you should provide API key values in the `.env` file
   
 ### 📜 Run the project
 
-* Create another terminal with the same path and enter the following commands
-  Run this before running frontend.py 
-  
+* Create another terminal with the same path and enter the following commands. 
+  #### Run this before running frontend.py 
+
   ```
   cd src
   python main.py
